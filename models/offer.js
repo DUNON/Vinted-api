@@ -1,15 +1,15 @@
 const mongoose = require("mongoose");
 
 const offer = mongoose.model("offer",{
-    product_name: String,
-    product_description: String,
-    product_price: Number,
-    product_details: Array,
-    product_image: { type: mongoose.Schema.Types.Mixed, default: {} },
-    owner: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    },
-  });
+  product_name: {type: String,maxlength:50},
+  product_description:{ type: String,maxlength:500 },
+  product_price: {type: Number, max:100000},
+  product_details: Array,
+  product_image: { type: mongoose.Schema.Types.Mixed, default: {} },
+  owner: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
+});
 
 module.exports = offer;

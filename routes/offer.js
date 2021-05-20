@@ -106,4 +106,68 @@ router.get("/offer/:id", async (req, res) =>{
     res.status(400).json(error.message);    
     }
 });
+
+router.put("/offer/update",isAuthenticated,async(req,res)=>{
+    //UPDATE
+    try {
+    const offerToUpdate=await offer.findById(req.fields.id);
+    const details = offerToUpdate.product_details;
+    offerToUpdate.markModified("product_details");
+//si elle existe on peut la modifier sinon on renvoie un message d'erreur
+    if (offerToUpdate) {
+        for(let i=0;i<details.length;i++){
+            if (req.fields.brand) {
+                if (details[i].MARQUE) {
+                    details[i].MARQUE=req.fields.brand;
+                }
+            }
+            if(req.fields.size) {
+                if (details[i].TAILLE) {
+                    details[i].TAILLE=req.fields.size;
+                }
+            }
+            if(req.fields.condition) {
+                if (details[i].ÉTAT) {
+                    details[i].ÉTAT=req.fields.condition;
+                }
+            }
+            if(req.fields.color) {
+                if (details[i].COULEUR) {
+                    details[i].COULEUR=req.fields.color;
+                }
+            }
+            if(req.fields.city) {
+                if (details[i].EMPLACEMENT) {
+                    details[i].EMPLACEMENT=req.fields.city;
+                }
+            }
+        }
+
+        if (req.fields.price) {
+            offerToUpdate.product_price = Number(req.fields.price);
+        }
+        if(req.fields.description){
+            offerToUpdate.product_description = req.fields.description;
+        }
+        if (req.fields.title) {
+            offerToUpdate.product_name = req.fields.title;
+        }
+    await offerToUpdate.save();
+    res.status(200).json({message: "Product updated !"});
+    } else {
+        res.status(401).json({message: "the offer doesn't exist"});
+    }
+} catch (error) {
+    res.status(400).json(error.message);
+}
+});
+
+router.delete("/offer/delete/:id",isAuthenticated,async(req,res)=>{
+    try {
+        const offerToDelete = await offer.findByIdAndDelete(req.params.id);
+        res.status(200).json({ message: "Product deleted" });
+    } catch (error) {
+        res.status(400).json(error.message);
+    }
+});
 module.exports = router;

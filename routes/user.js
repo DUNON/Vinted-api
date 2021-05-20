@@ -3,6 +3,7 @@ const encBase64 = require("crypto-js/enc-base64");
 const uid2 = require("uid2");
 const express = require("express");
 const router = express.Router();
+const cloudinary = require("cloudinary").v2;
 
 const User = require("../models/user");
 
@@ -27,13 +28,19 @@ const token = uid2(64);//rZB9TnW0QBXKwqms
             hash: hash,
             salt: salt,
         });
+//ajout d'un avatar a objet account de l'objet newUser
+        const avatar = await cloudinary.uploader.upload(req.files.picture.path,
+            {folder: `vinted/user/${newUser._id}`});
+        newUser.account.avatar = avatar;
 //Sauvegarde de l'utilisateur
         await newUser.save();
 //reponse a l'utilisateur
         res.status(200).json({
             _id: newUser._id,
             token: token,
-            account:{username:req.fields.username,phone:req.fields.phone},
+            account:{username:req.fields.username,
+                     phone:req.fields.phone,
+                     avatar:avatar},
                             });
         }else{
             res.status(400).json({message:"Username is missing"});

@@ -2,6 +2,7 @@ const express = require("express");
 const formidable = require("express-formidable");
 const mongoose = require("mongoose");
 const cloudinary = require("cloudinary").v2;
+const cors = require("cors");
 require("dotenv").config();
 
 //Connexion a BDD
@@ -20,6 +21,7 @@ cloudinary.config({
 
 const app = express();
 app.use(formidable());
+app.use(cors());
 //Import des routes
 const userRoutes = require("./routes/user");
 const offerRoutes = require("./routes/offer");

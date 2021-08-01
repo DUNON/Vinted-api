@@ -28,6 +28,8 @@ const offerRoutes = require("./routes/offer");
 app.use(userRoutes);
 app.use(offerRoutes);
 
+app.use("/");
+
 app.all("*",(req,res)=>{
 res.status(400).json({ message: "Page not found" });
 });

@@ -29,9 +29,10 @@ const token = uid2(64);//rZB9TnW0QBXKwqms
             salt: salt,
         });
 //ajout d'un avatar a objet account de l'objet newUser
+        if(req.files.avatar){
         const avatar = await cloudinary.uploader.upload(req.files.picture.path,
             {folder: `vinted/user/${newUser._id}`});
-        newUser.account.avatar = avatar;
+        newUser.account.avatar = avatar;}
 //Sauvegarde de l'utilisateur
         await newUser.save();
 //reponse a l'utilisateur

@@ -1,5 +1,7 @@
 const express = require("express");
 const formidable = require("express-formidable");
+const formidableMiddleware = require("express-formidable");
+const stripe = require("stripe")(process.env.STRIPE_API_SECRET);
 const mongoose = require("mongoose");
 const cloudinary = require("cloudinary").v2;
 const cors = require("cors");
@@ -20,6 +22,7 @@ cloudinary.config({
 });
 
 const app = express();
+app.use(formidableMiddleware());
 app.use(formidable());
 app.use(cors());
 //Import des routes

@@ -2,10 +2,12 @@ const SHA256 = require("crypto-js/sha256");
 const encBase64 = require("crypto-js/enc-base64");
 const uid2 = require("uid2");
 const express = require("express");
+const stripe = require("stripe")(process.env.STRIPE_API_SECRET);
 const router = express.Router();
 const cloudinary = require("cloudinary").v2;
 
 const User = require("../models/user");
+const { Router } = require("express");
 
 router.post("/user/signup", async (req, res) => {
   try {
@@ -86,5 +88,24 @@ const hash = SHA256(password + user.salt).toString(encBase64);
     
 }
 });
+
+router.post("user/pay", async (req, res) => {
+    // Réception du token créer via l'API Stripe depuis le Frontend
+    const stripeToken = req.fields.stripeToken;
+    // Créer la transaction
+    const response = await stripe.charges.create({
+      amount: 2000,
+      currency: "eur",
+      description: "La description de l'objet acheté",
+      // On envoie ici le token
+      source: stripeToken,
+    });
+    console.log(response.status);
+  
+    // TODO
+    // Sauvegarder la transaction dans une BDD MongoDB
+  
+    res.json(response);
+  });
 
 module.exports=router;

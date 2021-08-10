@@ -89,7 +89,7 @@ const hash = SHA256(password + user.salt).toString(encBase64);
 }
 });
 
-router.post("user/pay", async (req, res) => {
+router.post("/user/pay", async (req, res) => {
     // Réception du token créer via l'API Stripe depuis le Frontend
     const stripeToken = req.fields.stripeToken;
     // Créer la transaction

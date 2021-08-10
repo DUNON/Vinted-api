@@ -15,44 +15,45 @@ router.post("/user/signup", async (req, res) => {
     if (mail) {
       res.status(409).json({ message: "the same email already exist" });
     } else {
-        if (req.fields.username) {
-      const password = req.fields.password; //azerty
-      const salt = uid2(16); //lr1swhwb7nJsHIG8
-      const hash = SHA256(password + salt).toString(encBase64);
-      //lHkmhY/6AXodSBhPYLDxxFNXGJ1PW9t2lj8FMorBwbM=
-      const token = uid2(64); //rZB9TnW0QBXKwqms
-      //Creation d'un Utilisateur
-      const newUser = new User({
-        email: req.fields.email,
-        account: { username: req.fields.username, phone: req.fields.phone },
-        token: token,
-        hash: hash,
-        salt: salt,
-      });
-      await newUser.save();
-    
-      //ajout d'un avatar a objet account de l'objet newUser
-      if (req.files.avatar) {
-        const avatar = await cloudinary.uploader.upload(
-          req.files.picture.path,
-          { folder: `vinted/user/${newUser._id}` }
-        );
-        newUser.account.avatar = avatar;
+      if (req.fields.username) {
+        const password = req.fields.password; //azerty
+        const salt = uid2(16); //lr1swhwb7nJsHIG8
+        const hash = SHA256(password + salt).toString(encBase64);
+        //lHkmhY/6AXodSBhPYLDxxFNXGJ1PW9t2lj8FMorBwbM=
+        const token = uid2(64); //rZB9TnW0QBXKwqms
+        //Creation d'un Utilisateur
+        const newUser = new User({
+          email: req.fields.email,
+          account: { username: req.fields.username, phone: req.fields.phone },
+          token: token,
+          hash: hash,
+          salt: salt,
+        });
+        await newUser.save();
+
+        //ajout d'un avatar a objet account de l'objet newUser
+        if (req.files.avatar) {
+          const avatar = await cloudinary.uploader.upload(
+            req.files.picture.path,
+            { folder: `vinted/user/${newUser._id}` }
+          );
+          newUser.account.avatar = avatar;
+        }
+        //Sauvegarde de l'utilisateur
+        await newUser.save();
+        //reponse a l'utilisateur
+        res.status(200).json({
+          _id: newUser._id,
+          token: token,
+          account: {
+            username: req.fields.username,
+            phone: req.fields.phone,
+            avatar: avatar,
+          },
+        });
+      } else {
+        res.status(400).json({ message: "Username is missing" });
       }
-      //Sauvegarde de l'utilisateur
-      await newUser.save();
-      //reponse a l'utilisateur
-      res.status(200).json({
-        _id: newUser._id,
-        token: token,
-        account: {
-          username: req.fields.username,
-          phone: req.fields.phone,
-          avatar: avatar,
-        },
-      });
-    } else {
-      res.status(400).json({ message: "Username is missing" });
     }
   } catch (error) {
     res.status(400).json({ message: error.message });
